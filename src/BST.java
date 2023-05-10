@@ -1,39 +1,34 @@
 import java.util.*;
 
-public class BST<K extends Comparable<K>, V> implements Iterable<K>{
+public class BST<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
     private Node root;
     private class Node{
         private K key;
         private V val;
         private Node left, right;
+        private int size;
         public Node(K key, V val){
             this.key = key;
             this.val = val;
         }
-    }
-    public List<K> inOrder(){
-        List<K> list = new ArrayList<>();
-        inOrderTraversal(root, list);
-        return list;
-    }
-    private void inOrderTraversal(Node root, List<K> list){
-        if(root == null) return;
-        inOrderTraversal(root.left, list);
-        list.add(root.key);
-        inOrderTraversal(root.right, list);
+        public Node(K key, V val, int size){
+            this.key = key;
+            this.val = val;
+            this.size = size;
+        }
     }
 
     public void put(K key, V val){
-        root = privatePut(key, val, root);
+        root = privatePut(key, val, root, 0);
     }
-    private Node privatePut(K key, V value, Node root){
+    private Node privatePut(K key, V value, Node root, int size){
         if(root == null){
-            return new Node(key, value);
+            return new Node(key, value, size);
         }
         if(root.key.compareTo(key) > 0){
-            root.left = privatePut(key, value, root.left);
+            root.left = privatePut(key, value, root.left, size + 1);
         }
-        else root.right = privatePut(key, value, root.right);
+        else root.right = privatePut(key, value, root.right, size + 1);
 
         return root;
     }
@@ -73,11 +68,18 @@ public class BST<K extends Comparable<K>, V> implements Iterable<K>{
             root.right = privateDelete(key, root.right);
         }
         else {
-            if(root.left == null) return root.right;
-            else if(root.right == null) return root.left;
+            if(root.left == null) {
+                root.right.size = root.size - 1;
+                return root.right;
+            }
+            else if(root.right == null) {
+                root.left.size = root.size - 1;
+                return root.left;
+            }
             Node leftmost = getMinNode(root.right);
             root.key = leftmost.key;
             root.val = leftmost.val;
+            root.size--;
             root.right = privateDelete(root.key, root.right);
         }
         return root;
@@ -91,18 +93,29 @@ public class BST<K extends Comparable<K>, V> implements Iterable<K>{
         }
         return min;
     }
-    public Iterator<K> iterator(){
+    public Iterator<Pair<K, V>> iterator(){
         return new MyIterator();
     }
-    private class MyIterator implements Iterator<K>{
-        List<K> list = inOrder();
+    private class MyIterator implements Iterator<Pair<K,V>>{
+        public List<Pair<K,V>> inOrder(){
+            List<Pair<K,V>> list = new ArrayList<>();
+            inOrderTraversal(root, list);
+            return list;
+        }
+        private void inOrderTraversal(Node root, List<Pair<K,V>> list){
+            if(root == null) return;
+            inOrderTraversal(root.left, list);
+            list.add(new Pair<>(root.key, root.val));
+            inOrderTraversal(root.right, list);
+        }
+        List<Pair<K,V>> list = inOrder();
         int i = 0;
         @Override
         public boolean hasNext() {
             return i < list.size();
         }
         @Override
-        public K next() {
+        public Pair<K,V> next() {
             return list.get(i++);
         }
     }

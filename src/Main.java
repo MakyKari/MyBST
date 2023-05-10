@@ -12,15 +12,19 @@ public class Main {
         bst.put(7,"D");
         bst.put(9,"E");
         bst.put(10,"F");
-        System.out.println(bst.inOrder());
-
+        for(Pair<Integer, String> a: bst){
+            System.out.print(a.getKey() + " " + a.getValue() + " ");
+        }
+        System.out.println();
         System.out.println(bst.get(4));
         System.out.println(bst.get(8));
 
         bst.delete(1);
-        System.out.println(bst.inOrder());
-        for(Integer a: bst){
-            System.out.print(a + " ");
+
+        for(Pair<Integer, String> a: bst){
+            System.out.print(a.getKey() + " " + a.getValue() + " ");
         }
+        System.out.println();
+
     }
 }
