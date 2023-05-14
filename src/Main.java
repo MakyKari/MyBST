@@ -21,7 +21,7 @@ public class Main {
 
         bst.delete(1);
 
-        for(Pair<Integer, String> a: bst){
+        for(var a: bst){
             System.out.print(a.getKey() + " " + a.getValue() + " ");
         }
         System.out.println();
